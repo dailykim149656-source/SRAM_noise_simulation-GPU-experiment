@@ -1,0 +1,43 @@
+RTX 4060 Ti CUDA full-suite environment
+
+Snapshot
+- Report: reports/portability/cuda_full_report.md
+- Fidelity report: reports/portability/cuda_full_fidelity.md
+- Metadata: reports/portability/cuda_full_metadata.json
+- Results: reports/portability/cuda_full_results.csv
+- Source artifact: artifacts/benchmarks/20260606T075234Z_full
+
+Host
+- OS: Windows-10-10.0.26200-SP0
+- GPU: NVIDIA GeForce RTX 4060 Ti
+- GPU memory: 16380 MiB
+- NVIDIA driver: 560.94
+- Python: 3.11.9
+
+PyTorch runtime probe
+- torch.__version__: 2.12.0+cu126
+- torch.version.cuda: 12.6
+- torch.version.hip: None
+- torch.cuda.is_available(): True
+- torch.cuda.get_device_name(0): NVIDIA GeForce RTX 4060 Ti
+
+Package provenance
+- pip show torch:
+  - Name: torch
+  - Version: 2.12.0+cu126
+  - Summary: Tensors and Dynamic neural networks in Python with strong GPU acceleration
+  - Home-page: https://pytorch.org
+  - License: BSD-3-Clause
+  - Location: <local .venv-cuda-benchmark site-packages>
+  - Requires: filelock, fsspec, jinja2, networkx, setuptools, sympy, typing-extensions
+  - Required-by:
+- pip freeze torch-related entries:
+  - torch==2.12.0+cu126
+  - typing_extensions==4.15.0
+- direct_url.json: absent
+- install channel: unknown local wheel/index provenance
+
+Interpretation note
+- Treat the Torch version as captured environment metadata, not as a portable project dependency pin.
+- The exact wheel URL was not recoverable from local package metadata because direct_url.json was absent.
+- The CUDA snapshot is a measured local RTX 4060 Ti evidence pack; it is not a universal GPU speedup claim.

@@ -40,9 +40,20 @@ Use language like this:
 
 > The repository provides reproducible CPU benchmark artifacts today, a canonical `torch_accelerated` lane that is currently CUDA-validated when a compatible PyTorch build is available, and isolates accelerator-specific logic to reduce future ROCm/HIP porting cost.
 
+## Resume-Safe Wording
+
+Use:
+
+- Built a reproducible SRAM surrogate benchmark with CPU, NumPy, and CUDA-backed PyTorch lanes.
+- Validated RTX 4060 Ti runs with standardized artifacts, environment metadata, and CPU-vs-GPU fidelity checks.
+- Structured a semiconductor-domain simulation workload into a GPU validation asset with conservative claim boundaries.
+
 Avoid language like this:
 
 - `fully portable to AMD GPUs`
 - `ROCm-ready and validated`
 - `HIP support complete`
 - `CUDA-optimized SRAM simulator`
+- `GPU-accelerated SRAM physical simulator`
+- `PDK signoff validated`
+- `silicon accurate`

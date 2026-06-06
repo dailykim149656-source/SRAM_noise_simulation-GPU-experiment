@@ -37,6 +37,33 @@ This repository treats the analytical SRAM benchmark as a reproducible engineeri
 - Additional timing fields record mean, standard deviation, and p95.
 - Throughput is computed from the median wall-clock value.
 
+### Timing Scope
+
+The `torch_accelerated` wall-clock includes:
+
+- accelerator-side synthetic dataset generation
+- analytical SNM / BER tensor computation
+- perceptron inference
+- explicit device synchronization before stopping the timer
+
+It does not represent:
+
+- PCIe transfer benchmarking
+- hand-written CUDA kernel performance
+- SPICE-level physical simulation runtime
+
+Small smoke workloads are correctness-oriented and may underutilize the GPU because launch overhead dominates. Full workloads are the measured performance snapshots.
+
+## Fairness And Caveats
+
+The CPU and accelerator lanes are compared as benchmark lanes, not as identical implementation strategies.
+
+- CPU lanes use NumPy or existing analytical generation and inference paths.
+- The accelerator lane uses PyTorch tensors on the selected runtime.
+- Fidelity is measured on a shared feature matrix to isolate inference-path drift.
+- Throughput comparisons are meaningful for this benchmark workload, not universal SRAM simulation.
+- Smoke rows prove artifact shape and numerical fidelity; full rows carry the measured throughput claim.
+
 ## Fidelity Rules
 
 - Fidelity is measured on a shared feature matrix, not on per-lane generated inputs.

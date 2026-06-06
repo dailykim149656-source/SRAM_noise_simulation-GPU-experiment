@@ -1,6 +1,5 @@
 import numpy as np
 from typing import Dict, Tuple, List
-import matplotlib.pyplot as plt
 
 class ReliabilityModel:
     """

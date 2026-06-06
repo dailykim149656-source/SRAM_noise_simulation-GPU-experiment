@@ -26,6 +26,7 @@ class ReportGenerationTests(unittest.TestCase):
 
     def test_new_docs_do_not_include_absolute_paths(self) -> None:
         doc_paths = [
+            Path("PORTFOLIO_REVIEW.md"),
             Path("README.md"),
             Path("docs/benchmark_baseline_inventory.md"),
             Path("docs/benchmark_methodology.md"),
@@ -47,6 +48,9 @@ class ReportGenerationTests(unittest.TestCase):
             Path("docker/README.md"),
             Path("reports/portability/README.md"),
             Path("reports/portability/dashboard.md"),
+            Path("reports/portability/cuda_full_environment.txt"),
+            Path("reports/portability/cuda_full_metadata.json"),
+            Path("reports/portability/cuda_full_results.csv"),
         ]
         for path in doc_paths:
             text = path.read_text(encoding="utf-8")

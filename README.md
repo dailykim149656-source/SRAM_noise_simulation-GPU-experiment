@@ -6,31 +6,31 @@ This repository is an SRAM surrogate and simulation codebase with a portability-
 
 It is positioned as a reproducible GPU validation and benchmarking portfolio asset, not as a hand-tuned CUDA kernel library. The core value is the separation of CPU, NumPy, and accelerator lanes with benchmark artifacts, environment metadata, and CPU-vs-accelerator fidelity checks.
 
-## Portfolio Snapshot
+## Why This Exists
 
-| Area | Current Evidence |
-|---|---|
-| Domain workload | SRAM analytical surrogate and simulation paths |
-| Execution lanes | `cpu_existing`, `cpu_numpy`, canonical `torch_accelerated` |
-| CUDA validation | Checked-in RTX 4060 Ti snapshots under `reports/portability/` |
-| Fidelity validation | CPU reference vs accelerator checks with max/mean absolute-delta thresholds |
-| Portability boundary | CUDA-measured evidence is kept separate from ROCm/HIP future work |
+Semiconductor simulation and SRAM reliability work often mix domain assumptions, generated collateral, CPU reference paths, and accelerator experiments. This repository turns an SRAM analytical surrogate workload into a reviewable GPU validation asset with separated execution lanes, standardized artifacts, and explicit claim boundaries.
+
+## What I Validated
+
+- CPU baseline and NumPy reference lanes: `cpu_existing`, `cpu_numpy`
+- CUDA-backed PyTorch accelerator lane: canonical `torch_accelerated`
+- RTX 4060 Ti full-suite benchmark snapshot with environment metadata
+- CPU-vs-accelerator fidelity checks with max/mean absolute-delta thresholds
+- Standard artifacts: `metadata.json`, `results.csv`, `report.md`, `fidelity.md`
 
 ## Representative Results
 
 Representative checked-in evidence:
 
-| Evidence | Environment | Workload | Fidelity | Performance Signal |
-|---|---|---|---|---|
-| `reports/portability/cuda_smoke_report.md` | Windows, Python 3.11.9, Torch `2.6.0+cu124`, RTX 4060 Ti | `1024x64` smoke | CPU-vs-accelerator passed | correctness-oriented smoke snapshot |
-| `reports/portability/cuda_full_report.md` | Windows, Python 3.11.9, Torch `2.12.0+cu126`, CUDA `12.6`, RTX 4060 Ti | `10000x512`, `5000x1024`, `20000x512` full suite | max abs delta `2.958160e-08` | `185k-1.23M` samples/s, `18.64x-138.25x` vs `cpu_existing` across measured cases |
-| `reports/portability/dashboard.md` | RTX 4060 Ti snapshot series | smoke plus measured full rows | validation scope and claim level shown per artifact | throughput and speedup ranges summarized beside case size |
+| GPU | Suite | Workloads | Fidelity | Throughput | Speedup |
+|---|---|---|---|---:|---:|
+| RTX 4060 Ti 16GB | full | `10000x512`, `5000x1024`, `20000x512` | max abs delta `2.958160e-08` | `185k-1.23M` samples/s | `18.64x-138.25x` vs `cpu_existing` |
 
 Read the benchmark numbers with two separate questions in mind:
 
 - smoke rows prove artifact generation and numerical fidelity on a small case
 - measured throughput rows are environment-specific performance snapshots, not a universal speedup claim
-- the `2.12.0+cu126` Torch value in the full snapshot was rechecked from the local CUDA benchmark environment via `torch.__version__`, `torch.version.cuda`, `torch.cuda.get_device_name(0)`, and `pip show torch`; see `docs/reproduce_cuda_4060ti.md`
+- the `2.12.0+cu126` Torch value in the full snapshot was rechecked from the local CUDA benchmark environment via `torch.__version__`, `torch.version.cuda`, `torch.cuda.get_device_name(0)`, and `pip show torch`; see `docs/reproduce_cuda_4060ti.md` and `reports/portability/cuda_full_environment.txt`
 
 Today it provides:
 
@@ -39,9 +39,19 @@ Today it provides:
 - fidelity checks between CPU inference paths and the canonical accelerator lane
 - isolation of accelerator-specific logic to reduce future ROCm/HIP porting cost
 
-## Why This Matters For Semiconductor Simulation
+## Claim Boundary
 
-Semiconductor simulation and SRAM reliability work often mix domain assumptions, generated collateral, CPU reference paths, and accelerator experiments. This repository keeps those claims separated: CPU baselines remain reproducible, accelerator paths emit comparable artifacts, and portability plans stay distinct from measured CUDA evidence.
+This is a GPU validation and benchmarking framework for an SRAM analytical surrogate, not a hand-written CUDA kernel library. Future portability boundaries are designed separately from measured CUDA evidence.
+
+## Semiconductor-Domain Validation Roadmap
+
+This benchmark currently uses an SRAM analytical surrogate. Physical credibility is tracked separately from GPU performance:
+
+- Proxy-calibrated benchmark: current public state
+- Perceptron-vs-SPICE validation: planned or conditional
+- Silicon correlation: not claimed
+
+See `docs/pdk_validation_criteria.md` for the PDK/SPICE/silicon validation gates.
 
 ## What Is Validated
 
@@ -195,6 +205,9 @@ Checked-in sanitized snapshots are available under `reports/portability/`:
 - `reports/portability/cuda_smoke_fidelity.md`
 - `reports/portability/cuda_full_report.md`
 - `reports/portability/cuda_full_fidelity.md`
+- `reports/portability/cuda_full_environment.txt`
+- `reports/portability/cuda_full_metadata.json`
+- `reports/portability/cuda_full_results.csv`
 - `reports/portability/dashboard.md`
 
 Some generated benchmark artifacts may also include optional plots under `plots/`.

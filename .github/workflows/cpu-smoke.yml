@@ -4,11 +4,21 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: cpu-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   cpu-smoke:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          submodules: false
 
       - uses: actions/setup-python@v5
         with:
@@ -27,6 +37,8 @@ jobs:
             tests \
             gpu_analytical_adapter.py \
             execution_policy.py \
+            reliability_model.py \
+            lifetime_service.py \
             scripts/run_gpu_analytical_benchmark.py
 
       - name: Run unit tests

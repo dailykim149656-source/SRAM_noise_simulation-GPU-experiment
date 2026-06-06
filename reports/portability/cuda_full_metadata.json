@@ -1,0 +1,85 @@
+{
+  "artifact_files": [
+    "metadata.json",
+    "results.csv",
+    "report.md",
+    "fidelity.md"
+  ],
+  "backend_capabilities": [
+    {
+      "available": true,
+      "backend_kind": "cpu",
+      "device": "cpu",
+      "device_display_name": "cpu",
+      "fallback_allowed": false,
+      "name": "cpu_existing",
+      "precision": "float64",
+      "reason": "always-available",
+      "runtime_kind": "cpu"
+    },
+    {
+      "available": true,
+      "backend_kind": "cpu",
+      "device": "cpu",
+      "device_display_name": "cpu",
+      "fallback_allowed": false,
+      "name": "cpu_numpy",
+      "precision": "float64",
+      "reason": "always-available",
+      "runtime_kind": "cpu"
+    },
+    {
+      "available": true,
+      "backend_kind": "cuda",
+      "device": "cuda",
+      "device_display_name": "NVIDIA GeForce RTX 4060 Ti",
+      "fallback_allowed": true,
+      "name": "torch_accelerated",
+      "precision": "float32",
+      "reason": "cuda-ready",
+      "runtime_kind": "cuda"
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "10000x512",
+      "n_samples": 10000,
+      "variability_samples": 512
+    },
+    {
+      "case_id": "5000x1024",
+      "n_samples": 5000,
+      "variability_samples": 1024
+    },
+    {
+      "case_id": "20000x512",
+      "n_samples": 20000,
+      "variability_samples": 512
+    }
+  ],
+  "claim_level": "measured",
+  "device_mode": "auto",
+  "env": {
+    "accelerator_available": true,
+    "accelerator_backend_kind": "cuda",
+    "accelerator_device_display_name": "NVIDIA GeForce RTX 4060 Ti",
+    "accelerator_runtime_kind": "cuda",
+    "argv0": "cli.py",
+    "cuda_available": true,
+    "cuda_device_name": "NVIDIA GeForce RTX 4060 Ti",
+    "cuda_version": "12.6",
+    "executable_name": "python",
+    "hip_version": null,
+    "implementation": "CPython",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "python_version": "3.11.9",
+    "torch_build_tag": "cu126",
+    "torch_version": "2.12.0+cu126"
+  },
+  "latency_mode": "batch",
+  "repeat_runs": 3,
+  "seed": 20260310,
+  "suite": "full",
+  "validation_scope": "cuda_validated",
+  "warmup_runs": 1
+}

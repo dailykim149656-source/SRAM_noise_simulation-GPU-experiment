@@ -6,6 +6,9 @@ This note documents how the checked-in CUDA full-suite snapshot was verified and
 
 - Report: `reports/portability/cuda_full_report.md`
 - Fidelity report: `reports/portability/cuda_full_fidelity.md`
+- Environment report: `reports/portability/cuda_full_environment.txt`
+- Machine-readable metadata: `reports/portability/cuda_full_metadata.json`
+- Machine-readable results: `reports/portability/cuda_full_results.csv`
 - Artifact source: `artifacts/benchmarks/20260606T075234Z_full`
 - Host OS in metadata: Windows
 - Python in metadata: `3.11.9`
@@ -28,7 +31,7 @@ Observed values for the checked-in full snapshot:
 NVIDIA GeForce RTX 4060 Ti
 ```
 
-`pip show torch` reported `Version: 2.12.0+cu126`. The local wheel metadata did not include a `direct_url.json`, so this repository treats the value as captured environment metadata rather than a portable dependency pin.
+`pip show torch` reported `Version: 2.12.0+cu126`. The local wheel metadata did not include a `direct_url.json`, so this repository treats the value as captured environment metadata rather than a portable dependency pin. The checked-in `reports/portability/cuda_full_environment.txt` file records the sanitized package and driver details.
 
 ## Environment Setup
 
@@ -82,6 +85,8 @@ After a validated run, promote only sanitized public evidence into `reports/port
 ```powershell
 Copy-Item artifacts\benchmarks\<timestamp>_full\report.md reports\portability\cuda_full_report.md
 Copy-Item artifacts\benchmarks\<timestamp>_full\fidelity.md reports\portability\cuda_full_fidelity.md
+Copy-Item artifacts\benchmarks\<timestamp>_full\metadata.json reports\portability\cuda_full_metadata.json
+Copy-Item artifacts\benchmarks\<timestamp>_full\results.csv reports\portability\cuda_full_results.csv
 python scripts\build_portability_dashboard.py --artifact 20260417T070914Z_smoke --artifact 20260417T070915Z_smoke --artifact 20260417T105911Z_full --artifact <timestamp>_full --out-report reports\portability\dashboard.md
 ```
 
