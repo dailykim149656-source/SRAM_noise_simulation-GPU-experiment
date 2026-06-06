@@ -28,6 +28,8 @@ Representative checked-in evidence:
 |---|---|---|---|---:|---:|
 | RTX 4060 Ti 16GB | full | `10000x512`, `5000x1024`, `20000x512` | max abs delta `2.958160e-08` | `185k-1.23M` samples/s | `18.64x-138.25x` vs `cpu_existing` |
 
+Performance-engineering note: the chunk-size sweep in `reports/portability/chunk_size_sweep_4060ti.md` varies the PyTorch CUDA dataset chunk size on `20000x512`; the local RTX 4060 Ti run shows chunk `2048` at `1.36x` vs the default `1024` chunk for that sweep.
+
 Read the benchmark numbers with two separate questions in mind:
 
 - smoke rows prove artifact generation and numerical fidelity on a small case
@@ -210,6 +212,8 @@ Checked-in sanitized snapshots are available under `reports/portability/`:
 - `reports/portability/cuda_full_environment.txt`
 - `reports/portability/cuda_full_metadata.json`
 - `reports/portability/cuda_full_results.csv`
+- `reports/portability/chunk_size_sweep_4060ti.md`
+- `reports/portability/chunk_size_sweep_4060ti.csv`
 - `reports/portability/dashboard.md`
 
 Some generated benchmark artifacts may also include optional plots under `plots/`.

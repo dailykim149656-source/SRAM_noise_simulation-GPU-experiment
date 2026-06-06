@@ -39,6 +39,16 @@ class PortfolioPublicEvidenceTests(unittest.TestCase):
         self.assertIn(_format_speedup_range(speedups), readme)
         self.assertIn("Speedup vs CPU Existing", (REPO_ROOT / "reports" / "portability" / "cuda_full_report.md").read_text(encoding="utf-8"))
 
+    def test_readme_chunk_size_note_matches_sweep_csv(self) -> None:
+        readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+        results_path = REPO_ROOT / "reports" / "portability" / "chunk_size_sweep_4060ti.csv"
+        with results_path.open("r", encoding="utf-8", newline="") as fp:
+            rows = list(csv.DictReader(fp))
+        best = max(float(row["speedup_vs_1024"]) for row in rows)
+
+        self.assertIn(f"{best:.2f}x", readme)
+        self.assertIn("chunk-size sweep", readme)
+
     def test_public_docs_do_not_make_banned_claims(self) -> None:
         banned_claims = [
             "fully portable to AMD GPUs",
@@ -58,6 +68,7 @@ class PortfolioPublicEvidenceTests(unittest.TestCase):
             REPO_ROOT / "reports" / "portability" / "cuda_full_report.md",
             REPO_ROOT / "reports" / "portability" / "cuda_full_fidelity.md",
             REPO_ROOT / "reports" / "portability" / "cuda_full_environment.txt",
+            REPO_ROOT / "reports" / "portability" / "chunk_size_sweep_4060ti.md",
             REPO_ROOT / "reports" / "portability" / "dashboard.md",
         ]
         for path in public_docs:

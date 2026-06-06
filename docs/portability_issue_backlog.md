@@ -14,13 +14,14 @@ This backlog breaks the portability PRD into trackable follow-up work after the 
    - `docs/reproduce_cuda_4060ti.md`
 5. Added public claim and README-number guard tests in `tests/test_portfolio_public_evidence.py`.
 6. Added `PORTFOLIO_REVIEW.md` as the 5-minute NVIDIA-facing review path.
+7. Added a structured RTX 4060 Ti chunk-size sweep:
+   - `reports/portability/chunk_size_sweep_4060ti.md`
+   - `reports/portability/chunk_size_sweep_4060ti.csv`
 
 ## Open Follow-ups
 
 1. Add an Nsight Systems profiling summary for the RTX 4060 Ti run.
-2. Add one structured performance experiment:
-   - `torch.compile` comparison, or
-   - chunk-size sweep on RTX 4060 Ti.
+2. Add a `torch.compile` comparison if more Developer Technology-style evidence is needed.
 3. Refactor `native_backend.py` GPU torch fallbacks onto the new backend abstraction surface.
 4. Add ROCm-capability detection to the backend registry once AMD hardware is available.
 5. Add a manual ROCm validation checklist only after real AMD hardware access.

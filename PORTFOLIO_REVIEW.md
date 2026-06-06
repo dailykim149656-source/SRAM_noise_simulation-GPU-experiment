@@ -10,10 +10,11 @@ Use this path for a 5-minute technical review of the NVIDIA-facing GPU validatio
 4. `reports/portability/cuda_full_environment.txt`
 5. `reports/portability/cuda_full_metadata.json`
 6. `reports/portability/cuda_full_results.csv`
-7. `docs/benchmark_methodology.md`
-8. `backends/accelerator_lane.py`
-9. `backends/torch_portable.py`
-10. `benchmarks/runner.py`
+7. `reports/portability/chunk_size_sweep_4060ti.md`
+8. `docs/benchmark_methodology.md`
+9. `backends/accelerator_lane.py`
+10. `backends/torch_portable.py`
+11. `benchmarks/runner.py`
 
 ## What This Demonstrates
 
@@ -22,6 +23,7 @@ Use this path for a 5-minute technical review of the NVIDIA-facing GPU validatio
 - Standardized benchmark artifact design
 - CPU-vs-accelerator fidelity validation
 - Runtime/environment metadata capture
+- Structured performance experiment design on the existing PyTorch CUDA path
 - Conservative claim boundaries for public portfolio use
 
 ## What This Does Not Demonstrate
