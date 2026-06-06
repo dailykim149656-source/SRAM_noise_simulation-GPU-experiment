@@ -29,12 +29,28 @@ def parse_cases(case_text: str) -> list[BenchmarkCase]:
         text = token.strip()
         if not text:
             continue
-        left, right = text.lower().split("x", 1)
+        lowered = text.lower()
+        if "x" not in lowered:
+            raise ValueError(
+                f"invalid benchmark case '{text}': expected format '<n_samples>x<variability_samples>' (e.g. '1024x64')"
+            )
+        left, right = lowered.split("x", 1)
+        try:
+            n_samples = int(left)
+            variability_samples = int(right)
+        except ValueError as exc:
+            raise ValueError(
+                f"invalid benchmark case '{text}': n_samples and variability_samples must be integers"
+            ) from exc
+        if n_samples <= 0 or variability_samples <= 0:
+            raise ValueError(
+                f"invalid benchmark case '{text}': n_samples and variability_samples must be positive"
+            )
         cases.append(
             BenchmarkCase(
-                case_id=f"{int(left)}x{int(right)}",
-                n_samples=int(left),
-                variability_samples=int(right),
+                case_id=f"{n_samples}x{variability_samples}",
+                n_samples=n_samples,
+                variability_samples=variability_samples,
             )
         )
     if not cases:

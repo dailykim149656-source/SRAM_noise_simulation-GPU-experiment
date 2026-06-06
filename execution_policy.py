@@ -36,14 +36,14 @@ def detect_gpu_available() -> bool:
         available, _, _ = torch_accelerator_info()
         if bool(available):
             return True
-    except Exception:
+    except (ImportError, AttributeError, RuntimeError):
         pass
 
     try:
         import cupy  # type: ignore
 
         return int(cupy.cuda.runtime.getDeviceCount()) > 0
-    except Exception:
+    except (ImportError, AttributeError, RuntimeError):
         return False
 
 
@@ -65,26 +65,14 @@ def estimate_work_size(problem_kind: str, request: Dict[str, Any]) -> int:
         return num_cells * safety_margin
 
     if problem_kind == "optimize":
-        sram_sizes = request.get("sram_sizes_mb", [])
-        snm_values = request.get("snm_values_mv", [])
-        vmin_values = request.get("vmin_values_v", [])
+        def _safe_len(value: Any) -> int:
+            if hasattr(value, "__len__"):
+                return max(1, int(len(value)))
+            return 1
 
-        try:
-            n_sram = len(sram_sizes)
-        except Exception:
-            n_sram = 1
-        try:
-            n_snm = len(snm_values)
-        except Exception:
-            n_snm = 1
-        try:
-            n_vmin = len(vmin_values)
-        except Exception:
-            n_vmin = 1
-
-        n_sram = max(1, int(n_sram))
-        n_snm = max(1, int(n_snm))
-        n_vmin = max(1, int(n_vmin))
+        n_sram = _safe_len(request.get("sram_sizes_mb", []))
+        n_snm = _safe_len(request.get("snm_values_mv", []))
+        n_vmin = _safe_len(request.get("vmin_values_v", []))
         return n_sram * n_snm * n_vmin
 
     return 1
@@ -103,7 +91,7 @@ def select_engine(problem_kind: str, request: Dict[str, Any]) -> Tuple[str, str,
             from backends.registry import get_gpu_backend_capability
 
             gpu_available = bool(get_gpu_backend_capability(device_mode="auto").available)
-        except Exception:
+        except (ImportError, AttributeError, RuntimeError):
             gpu_available = detect_gpu_available()
     work_size = estimate_work_size(problem_kind, request)
 

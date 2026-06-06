@@ -10,6 +10,7 @@ import importlib
 import json
 import math
 import os
+import threading
 from typing import Any, Dict, List, Optional, Tuple
 
 from backends.base import BackendCapability
@@ -25,6 +26,7 @@ class NativeBackendError(RuntimeError):
 
 _NATIVE_MODULE: Optional[Any] = None
 _NATIVE_IMPORT_ERROR: Optional[str] = None
+_NATIVE_LOCK = threading.Lock()
 
 
 def _native_import_error_suffix() -> str:
@@ -35,16 +37,21 @@ def _native_import_error_suffix() -> str:
 
 def _load_native_module() -> Optional[Any]:
     global _NATIVE_MODULE, _NATIVE_IMPORT_ERROR
-    if _NATIVE_MODULE is not None:
-        return _NATIVE_MODULE
+    cached = _NATIVE_MODULE
+    if cached is not None:
+        return cached
 
-    try:
-        _NATIVE_MODULE = importlib.import_module("_sram_native")
+    with _NATIVE_LOCK:
+        if _NATIVE_MODULE is not None:
+            return _NATIVE_MODULE
+        try:
+            module = importlib.import_module("_sram_native")
+        except ImportError as exc:
+            _NATIVE_IMPORT_ERROR = f"{exc.__class__.__name__}: {exc}"
+            return None
+        _NATIVE_MODULE = module
         _NATIVE_IMPORT_ERROR = None
-        return _NATIVE_MODULE
-    except Exception as exc:
-        _NATIVE_IMPORT_ERROR = f"{exc.__class__.__name__}: {exc}"
-        return None
+        return module
 
 
 def _json_call(function_name: str, request: Dict[str, Any]) -> Optional[Any]:
@@ -57,7 +64,12 @@ def _json_call(function_name: str, request: Dict[str, Any]) -> Optional[Any]:
     if not isinstance(raw, str):
         raise NativeBackendError(f"Native function {function_name} returned non-string response")
 
-    response = json.loads(raw)
+    try:
+        response = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise NativeBackendError(
+            f"Native {function_name} returned invalid JSON: {exc.msg} at line {exc.lineno} col {exc.colno}"
+        ) from exc
     if isinstance(response, dict) and "error" in response:
         raise NativeBackendError(f"Native {function_name} failed: {response['error']}")
     return response

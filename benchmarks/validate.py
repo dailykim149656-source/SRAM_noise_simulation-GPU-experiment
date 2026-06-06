@@ -117,24 +117,52 @@ def _validate_extended_artifact(metadata: dict[str, object], result_rows: list[d
         raise ValueError(f"fresh artifact missing canonical lane '{CANONICAL_ACCELERATOR_LANE}'")
 
 
+def _read_text(path: Path, *, label: str) -> str:
+    try:
+        return path.read_text(encoding="utf-8")
+    except FileNotFoundError as exc:
+        raise ValueError(f"missing artifact {label}: {path}") from exc
+    except PermissionError as exc:
+        raise ValueError(f"permission denied reading artifact {label}: {path}") from exc
+    except OSError as exc:
+        raise ValueError(f"failed to read artifact {label} at {path}: {exc}") from exc
+
+
 def validate_artifact_dir(artifact_dir: Path) -> None:
+    if not artifact_dir.is_dir():
+        raise ValueError(f"artifact directory does not exist or is not a directory: {artifact_dir}")
+
     metadata_path = artifact_dir / "metadata.json"
     results_path = artifact_dir / "results.csv"
     report_path = artifact_dir / "report.md"
     fidelity_path = artifact_dir / "fidelity.md"
 
-    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
-    with results_path.open("r", encoding="utf-8", newline="") as fp:
-        result_rows = list(csv.DictReader(fp))
+    metadata_text = _read_text(metadata_path, label="metadata.json")
+    try:
+        metadata = json.loads(metadata_text)
+    except json.JSONDecodeError as exc:
+        raise ValueError(
+            f"invalid JSON in {metadata_path}: {exc.msg} at line {exc.lineno} col {exc.colno}"
+        ) from exc
+    if not isinstance(metadata, dict):
+        raise ValueError(f"{metadata_path} must contain a JSON object at the top level")
 
-    fidelity_text = fidelity_path.read_text(encoding="utf-8")
+    try:
+        with results_path.open("r", encoding="utf-8", newline="") as fp:
+            result_rows = list(csv.DictReader(fp))
+    except FileNotFoundError as exc:
+        raise ValueError(f"missing artifact results.csv: {results_path}") from exc
+    except OSError as exc:
+        raise ValueError(f"failed to read artifact results.csv at {results_path}: {exc}") from exc
+
+    fidelity_text = _read_text(fidelity_path, label="fidelity.md")
     fidelity_records = _parse_fidelity_markdown(fidelity_text)
 
     validate_metadata(metadata)
     validate_result_rows(result_rows)
     _validate_extended_artifact(metadata, result_rows)
     validate_fidelity_records(fidelity_records)
-    validate_report_text(report_path.read_text(encoding="utf-8"))
+    validate_report_text(_read_text(report_path, label="report.md"))
     validate_report_text(fidelity_text)
 
 
