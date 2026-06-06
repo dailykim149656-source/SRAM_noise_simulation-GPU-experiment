@@ -6,6 +6,8 @@ This repository is an SRAM surrogate and simulation codebase with a portability-
 
 It is positioned as a reproducible GPU validation and benchmarking portfolio asset, not as a hand-tuned CUDA kernel library. The core value is the separation of CPU, NumPy, and accelerator lanes with benchmark artifacts, environment metadata, and CPU-vs-accelerator fidelity checks.
 
+For a 5-minute technical review, start here: [PORTFOLIO_REVIEW.md](PORTFOLIO_REVIEW.md).
+
 ## Why This Exists
 
 Semiconductor simulation and SRAM reliability work often mix domain assumptions, generated collateral, CPU reference paths, and accelerator experiments. This repository turns an SRAM analytical surrogate workload into a reviewable GPU validation asset with separated execution lanes, standardized artifacts, and explicit claim boundaries.
