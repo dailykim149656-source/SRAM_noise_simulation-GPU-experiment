@@ -1,3 +1,15 @@
+# Normalize text files for public review.
+* text=auto eol=lf
+
+*.py text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+*.json text eol=lf
+*.csv text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+
 # Keep generated semiconductor collateral from dominating GitHub Linguist.
 vendor/** linguist-vendored
 reports/ops_plan_v1/**/raw/** linguist-generated
