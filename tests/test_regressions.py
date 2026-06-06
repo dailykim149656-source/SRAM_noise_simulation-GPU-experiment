@@ -133,6 +133,10 @@ class NativeBackendRegressionTests(unittest.TestCase):
         self.assertTrue(result["_exec"]["fallback"])
         capability_names = {cap["name"] for cap in result["_exec"]["capabilities"]}
         self.assertIn("simulate_python_fallback", capability_names)
+        for capability in result["_exec"]["capabilities"]:
+            self.assertIn("backend_kind", capability)
+            self.assertIn("runtime_kind", capability)
+            self.assertIn("device_display_name", capability)
 
     def test_predict_lifetime_uses_shared_torch_runtime_reason_labels(self) -> None:
         torch_runtime_response = {
@@ -159,6 +163,10 @@ class NativeBackendRegressionTests(unittest.TestCase):
         self.assertIn("torch_rocm_backend", result["_exec"]["reason"])
         capability_names = {cap["name"] for cap in result["_exec"]["capabilities"]}
         self.assertIn("lifetime_torch_accelerated", capability_names)
+        for capability in result["_exec"]["capabilities"]:
+            self.assertIn("backend_kind", capability)
+            self.assertIn("runtime_kind", capability)
+            self.assertIn("device_display_name", capability)
 
     def test_predict_lifetime_adds_backend_label_for_native_response(self) -> None:
         native_response = {

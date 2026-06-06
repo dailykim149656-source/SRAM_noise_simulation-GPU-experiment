@@ -2816,11 +2816,19 @@ class SRAMSimulatorWindow(QMainWindow):
                 else:
                     lines.append("- Native GPU entrypoints present: none")
                     try:
-                        import torch
-                        torch_cuda_backend = bool(torch.cuda.is_available())
+                        from backends.torch_portable import get_torch_runtime_metadata
+
+                        torch_runtime = get_torch_runtime_metadata()
+                        torch_backend_available = bool(torch_runtime.accelerator_available)
+                        torch_backend_detail = (
+                            f"{torch_runtime.backend_kind}/{torch_runtime.runtime_kind} "
+                            f"on {torch_runtime.device_display_name} ({torch_runtime.reason})"
+                        )
                     except Exception:
-                        torch_cuda_backend = False
-                    lines.append(f"- Torch CUDA backend available to wrapper: {torch_cuda_backend}")
+                        torch_backend_available = False
+                        torch_backend_detail = "unavailable"
+                    lines.append(f"- Torch accelerator backend available to wrapper: {torch_backend_available}")
+                    lines.append(f"- Torch accelerator backend detail: {torch_backend_detail}")
 
                 probe_input = np.random.randint(0, 2, max(8, min(64, int(self.num_cells)))).tolist()
                 probe_result = native_simulate_array({

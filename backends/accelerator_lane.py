@@ -32,7 +32,7 @@ def _capability_from_runtime(
 ) -> BackendCapability:
     return BackendCapability(
         name=LANE_NAME,
-        device="cuda" if available else "cpu",
+        device=str(backend_kind) if available else "cpu",
         available=bool(available),
         reason=str(reason),
         fallback_allowed=True,

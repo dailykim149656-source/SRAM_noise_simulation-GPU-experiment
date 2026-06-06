@@ -101,6 +101,20 @@ def _enforce_gpu_requirement(
         )
 
 
+def _capability_to_exec_metadata(cap: BackendCapability) -> Dict[str, Any]:
+    return {
+        "name": cap.name,
+        "device": cap.device,
+        "available": bool(cap.available),
+        "reason": cap.reason,
+        "fallback_allowed": bool(cap.fallback_allowed),
+        "precision": cap.precision,
+        "backend_kind": cap.backend_kind,
+        "runtime_kind": cap.runtime_kind,
+        "device_display_name": cap.device_display_name,
+    }
+
+
 def _attach_exec_meta(
     response: Dict[str, Any],
     selected: str,
@@ -119,17 +133,7 @@ def _attach_exec_meta(
         "fallback": bool(fallback),
     }
     if capabilities is not None:
-        out["_exec"]["capabilities"] = [
-            {
-                "name": cap.name,
-                "device": cap.device,
-                "available": bool(cap.available),
-                "reason": cap.reason,
-                "fallback_allowed": bool(cap.fallback_allowed),
-                "precision": cap.precision,
-            }
-            for cap in capabilities
-        ]
+        out["_exec"]["capabilities"] = [_capability_to_exec_metadata(cap) for cap in capabilities]
     return out
 
 
@@ -151,17 +155,7 @@ def _attach_exec_meta_rows(
         "fallback": bool(fallback),
     }
     if capabilities is not None:
-        exec_meta["capabilities"] = [
-            {
-                "name": cap.name,
-                "device": cap.device,
-                "available": bool(cap.available),
-                "reason": cap.reason,
-                "fallback_allowed": bool(cap.fallback_allowed),
-                "precision": cap.precision,
-            }
-            for cap in capabilities
-        ]
+        exec_meta["capabilities"] = [_capability_to_exec_metadata(cap) for cap in capabilities]
     for row in rows:
         row_out = dict(row)
         row_out["_exec"] = dict(exec_meta)
