@@ -13,13 +13,15 @@ class PortabilityDashboardTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="sram-dashboard-") as tempdir:
             artifact_root = Path(tempdir) / "artifacts"
             out_report = Path(tempdir) / "dashboard.md"
-            run_suite(suite="smoke", device_mode="cpu", artifact_root=artifact_root, seed=20260310)
+            result = run_suite(suite="smoke", device_mode="cpu", artifact_root=artifact_root, seed=20260310)
             completed = subprocess.run(
                 [
                     sys.executable,
                     "scripts/build_portability_dashboard.py",
                     "--artifact-root",
                     str(artifact_root),
+                    "--artifact",
+                    result.artifact_dir.name,
                     "--out-report",
                     str(out_report),
                 ],
@@ -30,4 +32,8 @@ class PortabilityDashboardTests(unittest.TestCase):
             self.assertEqual(completed.returncode, 0, msg=completed.stdout + completed.stderr)
             text = out_report.read_text(encoding="utf-8")
             self.assertIn("Portability Benchmark Dashboard", text)
+            self.assertIn("Validation Scope", text)
+            self.assertIn("Claim", text)
+            self.assertIn("1024x64", text)
+            self.assertIn("cpu_validated", text)
             self.assertFalse(contains_absolute_path(text))

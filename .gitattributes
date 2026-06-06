@@ -1,0 +1,18 @@
+# Keep generated semiconductor collateral from dominating GitHub Linguist.
+vendor/** linguist-vendored
+reports/ops_plan_v1/**/raw/** linguist-generated
+reports/**/*.sp linguist-generated
+reports/**/*.spice linguist-generated
+reports/**/*.cdl linguist-generated
+reports/**/*.gds linguist-generated
+reports/**/*.lef linguist-generated
+reports/**/*.log linguist-generated
+spice_validation/netlists/** linguist-generated
+spice_validation/results/** linguist-generated
+spice_validation/reports/** linguist-generated
+
+# Treat generated benchmark artifacts as data, not implementation language signal.
+artifacts/** linguist-generated
+*.csv linguist-generated
+*.tsv linguist-generated
+*.xlsx linguist-generated

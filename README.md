@@ -2,12 +2,42 @@
 
 This repository is an SRAM surrogate and simulation codebase with a portability-focused analytical benchmark path.
 
+It is positioned as a reproducible GPU validation and benchmarking portfolio asset, not as a hand-tuned CUDA kernel library. The core value is the separation of CPU, NumPy, and accelerator lanes with benchmark artifacts, environment metadata, and CPU-vs-accelerator fidelity checks.
+
+## Portfolio Snapshot
+
+| Area | Current Evidence |
+|---|---|
+| Domain workload | SRAM analytical surrogate and simulation paths |
+| Execution lanes | `cpu_existing`, `cpu_numpy`, canonical `torch_accelerated` |
+| CUDA validation | Checked-in RTX 4060 Ti snapshots under `reports/portability/` |
+| Fidelity validation | CPU reference vs accelerator checks with max/mean absolute-delta thresholds |
+| Portability boundary | CUDA-measured evidence is kept separate from ROCm/HIP future work |
+
+## CUDA Validation Snapshot
+
+Representative checked-in CUDA evidence:
+
+| Snapshot | Environment | Case | Result |
+|---|---|---|---|
+| `reports/portability/cuda_smoke_report.md` | Windows, Python 3.11.9, Torch `2.6.0+cu124`, RTX 4060 Ti | `1024x64` smoke | CUDA lane executed and CPU-vs-accelerator fidelity passed |
+| `reports/portability/dashboard.md` | RTX 4060 Ti snapshot series | `1024x64` measured full-mode rows | `torch_accelerated` recorded roughly `408k-491k` samples/s in representative runs |
+
+Read the benchmark numbers with two separate questions in mind:
+
+- smoke rows prove artifact generation and numerical fidelity on a small case
+- measured throughput rows are environment-specific performance snapshots, not a universal speedup claim
+
 Today it provides:
 
 - reproducible CPU benchmark artifacts
 - a canonical `torch_accelerated` lane that is currently CUDA-validated when a compatible PyTorch build is available
 - fidelity checks between CPU inference paths and the canonical accelerator lane
 - isolation of accelerator-specific logic to reduce future ROCm/HIP porting cost
+
+## Why This Matters For Semiconductor Simulation
+
+Semiconductor simulation and SRAM reliability work often mix domain assumptions, generated collateral, CPU reference paths, and accelerator experiments. This repository keeps those claims separated: CPU baselines remain reproducible, accelerator paths emit comparable artifacts, and portability plans stay distinct from measured CUDA evidence.
 
 ## What Is Validated
 
@@ -28,6 +58,7 @@ Today it provides:
 - No HIP port is implemented in this batch
 - ROCm validation is pending AMD hardware access
 - `native_backend.py` simulate/lifetime/optimize flows are not fully migrated into the new backend package yet
+- The checked-in CUDA snapshots do not claim universal GPU speedup across all workload sizes
 
 Use conservative wording:
 

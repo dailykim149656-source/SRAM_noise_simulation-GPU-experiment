@@ -26,14 +26,42 @@ def _latest_artifacts(artifact_root: Path, limit: int) -> list[Path]:
     return sorted(candidates)[-max(int(limit), 1) :]
 
 
+def _case_summary(metadata: dict[str, object]) -> str:
+    cases = metadata.get("cases", [])
+    if not isinstance(cases, list) or not cases:
+        return "unknown"
+    case_ids = []
+    for case in cases:
+        if isinstance(case, dict) and case.get("case_id"):
+            case_ids.append(str(case["case_id"]))
+    return ", ".join(case_ids) if case_ids else "unknown"
+
+
+def _accelerator_runtime(metadata: dict[str, object]) -> str:
+    env = metadata.get("env", {})
+    if not isinstance(env, dict):
+        return "unknown"
+    runtime = env.get("accelerator_runtime_kind")
+    backend = env.get("accelerator_backend_kind")
+    if runtime:
+        return str(runtime)
+    if backend:
+        return str(backend)
+    if env.get("cuda_available"):
+        return "cuda"
+    return "unknown"
+
+
 def build_dashboard(artifact_dirs: list[Path]) -> str:
     lines = [
         "# Portability Benchmark Dashboard",
         "",
         "This dashboard summarizes representative portability benchmark artifacts produced by the standardized analytical benchmark pipeline.",
         "",
-        "| Artifact | Suite | Device Mode | CPU Existing Throughput | CPU NumPy Throughput | Torch Accelerated Throughput |",
-        "|---|---|---|---:|---:|---:|",
+        "Interpret smoke rows as correctness/fidelity checks. Treat measured throughput rows as environment-specific snapshots, not universal speedup claims.",
+        "",
+        "| Artifact | Suite | Cases | Device Mode | Validation Scope | Claim | Accelerator Runtime | CPU Existing Throughput | CPU NumPy Throughput | Torch Accelerated Throughput |",
+        "|---|---|---|---|---|---|---|---:|---:|---:|",
     ]
     for artifact_dir in artifact_dirs:
         metadata = json.loads((artifact_dir / "metadata.json").read_text(encoding="utf-8"))
@@ -41,7 +69,10 @@ def build_dashboard(artifact_dirs: list[Path]) -> str:
         row_map = {normalize_lane_name(row["lane"]): row for row in rows}
         lines.append(
             "| "
-            f"{artifact_dir.name} | {metadata['suite']} | {metadata['device_mode']} | "
+            f"{artifact_dir.name} | {metadata['suite']} | {_case_summary(metadata)} | {metadata['device_mode']} | "
+            f"{metadata.get('validation_scope', 'legacy_snapshot')} | "
+            f"{metadata.get('claim_level', 'legacy')} | "
+            f"{_accelerator_runtime(metadata)} | "
             f"{float(row_map['cpu_existing']['throughput_samples_per_sec']):.3f} | "
             f"{float(row_map['cpu_numpy']['throughput_samples_per_sec']):.3f} | "
             f"{float(row_map['torch_accelerated']['throughput_samples_per_sec']):.3f} |"
@@ -54,11 +85,26 @@ def build_dashboard(artifact_dirs: list[Path]) -> str:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Build portability benchmark dashboard")
     parser.add_argument("--artifact-root", type=Path, default=REPO_ROOT / "artifacts" / "benchmarks")
+    parser.add_argument(
+        "--artifact",
+        action="append",
+        default=[],
+        help="artifact directory name or path to include; can be repeated",
+    )
     parser.add_argument("--limit", type=int, default=5)
     parser.add_argument("--out-report", type=Path, default=REPO_ROOT / "reports" / "portability" / "dashboard.md")
     args = parser.parse_args()
 
-    artifact_dirs = _latest_artifacts(Path(args.artifact_root), args.limit)
+    artifact_root = Path(args.artifact_root)
+    if args.artifact:
+        artifact_dirs = []
+        for artifact in args.artifact:
+            artifact_path = Path(artifact)
+            if not artifact_path.is_absolute():
+                artifact_path = artifact_root / artifact_path
+            artifact_dirs.append(artifact_path)
+    else:
+        artifact_dirs = _latest_artifacts(artifact_root, args.limit)
     if not artifact_dirs:
         raise FileNotFoundError(f"no benchmark artifacts found under {args.artifact_root}")
 
