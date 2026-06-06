@@ -53,6 +53,7 @@ class ReportGenerationTests(unittest.TestCase):
             Path("reports/portability/cuda_full_results.csv"),
             Path("reports/portability/chunk_size_sweep_4060ti.md"),
             Path("reports/portability/chunk_size_sweep_4060ti.csv"),
+            Path("reports/portability/torch_compile_preflight_4060ti.md"),
         ]
         for path in doc_paths:
             text = path.read_text(encoding="utf-8")

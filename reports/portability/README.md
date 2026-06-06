@@ -17,6 +17,7 @@ Included:
 - `cuda_full_results.csv`
 - `chunk_size_sweep_4060ti.md`
 - `chunk_size_sweep_4060ti.csv`
+- `torch_compile_preflight_4060ti.md`
 - `dashboard.md`
 - `changelog.md`
 - `prd_verify.json`
@@ -26,6 +27,8 @@ These are representative benchmark artifacts captured from the standardized port
 The RTX 4060 Ti full-suite snapshot is paired with `docs/reproduce_cuda_4060ti.md` and `cuda_full_environment.txt`, which record the local Torch/CUDA verification commands used to defend the `2.12.0+cu126` environment metadata. `cuda_full_metadata.json` and `cuda_full_results.csv` provide machine-readable copies of the checked-in full-suite evidence.
 
 `chunk_size_sweep_4060ti.md` is a separate performance-engineering note for the existing PyTorch CUDA path. It varies `build_torch_dataset()` chunk size on `20000x512` and should be read beside, not instead of, the full-suite validation report.
+
+`torch_compile_preflight_4060ti.md` records why a `torch.compile` speedup table is not published yet: the local PyTorch build exposes `torch.compile`, but execution failed before timing because a working Triton installation was unavailable.
 
 Important reading notes:
 

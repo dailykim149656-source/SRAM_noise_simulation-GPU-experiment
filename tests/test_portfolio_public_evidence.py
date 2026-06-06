@@ -69,6 +69,7 @@ class PortfolioPublicEvidenceTests(unittest.TestCase):
             REPO_ROOT / "reports" / "portability" / "cuda_full_fidelity.md",
             REPO_ROOT / "reports" / "portability" / "cuda_full_environment.txt",
             REPO_ROOT / "reports" / "portability" / "chunk_size_sweep_4060ti.md",
+            REPO_ROOT / "reports" / "portability" / "torch_compile_preflight_4060ti.md",
             REPO_ROOT / "reports" / "portability" / "dashboard.md",
         ]
         for path in public_docs:

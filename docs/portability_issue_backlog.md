@@ -17,11 +17,13 @@ This backlog breaks the portability PRD into trackable follow-up work after the 
 7. Added a structured RTX 4060 Ti chunk-size sweep:
    - `reports/portability/chunk_size_sweep_4060ti.md`
    - `reports/portability/chunk_size_sweep_4060ti.csv`
+8. Recorded a `torch.compile` preflight that was blocked by missing working Triton support:
+   - `reports/portability/torch_compile_preflight_4060ti.md`
 
 ## Open Follow-ups
 
 1. Add an Nsight Systems profiling summary for the RTX 4060 Ti run.
-2. Add a `torch.compile` comparison if more Developer Technology-style evidence is needed.
+2. Add a `torch.compile` comparison after installing and documenting a compatible Triton stack.
 3. Refactor `native_backend.py` GPU torch fallbacks onto the new backend abstraction surface.
 4. Add ROCm-capability detection to the backend registry once AMD hardware is available.
 5. Add a manual ROCm validation checklist only after real AMD hardware access.
