@@ -10,6 +10,8 @@ Included:
 - `cpu_smoke_fidelity.md`
 - `cuda_smoke_report.md`
 - `cuda_smoke_fidelity.md`
+- `cuda_full_report.md`
+- `cuda_full_fidelity.md`
 - `dashboard.md`
 - `changelog.md`
 - `prd_verify.json`

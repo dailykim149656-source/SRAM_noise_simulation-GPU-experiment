@@ -21,7 +21,8 @@ Representative checked-in CUDA evidence:
 | Snapshot | Environment | Case | Result |
 |---|---|---|---|
 | `reports/portability/cuda_smoke_report.md` | Windows, Python 3.11.9, Torch `2.6.0+cu124`, RTX 4060 Ti | `1024x64` smoke | CUDA lane executed and CPU-vs-accelerator fidelity passed |
-| `reports/portability/dashboard.md` | RTX 4060 Ti snapshot series | `1024x64` measured full-mode rows | `torch_accelerated` recorded roughly `408k-491k` samples/s in representative runs |
+| `reports/portability/cuda_full_report.md` | Windows, Python 3.11.9, Torch `2.12.0+cu126`, RTX 4060 Ti | `10000x512`, `5000x1024`, `20000x512` full suite | CUDA lane passed and recorded roughly `185k-1.23M` samples/s across the measured cases |
+| `reports/portability/dashboard.md` | RTX 4060 Ti snapshot series | smoke plus measured full rows | case size, validation scope, claim level, and runtime are summarized together |
 
 Read the benchmark numbers with two separate questions in mind:
 
@@ -189,6 +190,8 @@ Checked-in sanitized snapshots are available under `reports/portability/`:
 - `reports/portability/cpu_smoke_fidelity.md`
 - `reports/portability/cuda_smoke_report.md`
 - `reports/portability/cuda_smoke_fidelity.md`
+- `reports/portability/cuda_full_report.md`
+- `reports/portability/cuda_full_fidelity.md`
 - `reports/portability/dashboard.md`
 
 Some generated benchmark artifacts may also include optional plots under `plots/`.

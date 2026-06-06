@@ -52,6 +52,19 @@ def _accelerator_runtime(metadata: dict[str, object]) -> str:
     return "unknown"
 
 
+def _throughput_summary(rows: list[dict[str, str]], lane_name: str) -> str:
+    values = [
+        float(row["throughput_samples_per_sec"])
+        for row in rows
+        if normalize_lane_name(row["lane"]) == lane_name and row.get("status") == "pass"
+    ]
+    if not values:
+        return "0.000"
+    if len(values) == 1:
+        return f"{values[0]:.3f}"
+    return f"{min(values):.3f}-{max(values):.3f}"
+
+
 def build_dashboard(artifact_dirs: list[Path]) -> str:
     lines = [
         "# Portability Benchmark Dashboard",
@@ -61,21 +74,20 @@ def build_dashboard(artifact_dirs: list[Path]) -> str:
         "Interpret smoke rows as correctness/fidelity checks. Treat measured throughput rows as environment-specific snapshots, not universal speedup claims.",
         "",
         "| Artifact | Suite | Cases | Device Mode | Validation Scope | Claim | Accelerator Runtime | CPU Existing Throughput | CPU NumPy Throughput | Torch Accelerated Throughput |",
-        "|---|---|---|---|---|---|---|---:|---:|---:|",
+        "|---|---|---|---|---|---|---|---|---|---|",
     ]
     for artifact_dir in artifact_dirs:
         metadata = json.loads((artifact_dir / "metadata.json").read_text(encoding="utf-8"))
         rows = _load_rows(artifact_dir / "results.csv")
-        row_map = {normalize_lane_name(row["lane"]): row for row in rows}
         lines.append(
             "| "
             f"{artifact_dir.name} | {metadata['suite']} | {_case_summary(metadata)} | {metadata['device_mode']} | "
             f"{metadata.get('validation_scope', 'legacy_snapshot')} | "
             f"{metadata.get('claim_level', 'legacy')} | "
             f"{_accelerator_runtime(metadata)} | "
-            f"{float(row_map['cpu_existing']['throughput_samples_per_sec']):.3f} | "
-            f"{float(row_map['cpu_numpy']['throughput_samples_per_sec']):.3f} | "
-            f"{float(row_map['torch_accelerated']['throughput_samples_per_sec']):.3f} |"
+            f"{_throughput_summary(rows, 'cpu_existing')} | "
+            f"{_throughput_summary(rows, 'cpu_numpy')} | "
+            f"{_throughput_summary(rows, 'torch_accelerated')} |"
         )
     text = "\n".join(lines) + "\n"
     validate_report_text(text)
