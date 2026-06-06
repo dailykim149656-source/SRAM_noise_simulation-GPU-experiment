@@ -1,0 +1,12 @@
+[submodule "vendor/pdks/OpenRAM"]
+	path = vendor/pdks/OpenRAM
+	url = https://github.com/VLSIDA/OpenRAM.git
+[submodule "vendor/pdks/asap7_pdk_r1p7"]
+	path = vendor/pdks/asap7_pdk_r1p7
+	url = https://github.com/The-OpenROAD-Project/asap7_pdk_r1p7.git
+[submodule "vendor/pdks/gf180mcu_fd_pr"]
+	path = vendor/pdks/gf180mcu_fd_pr
+	url = https://github.com/google/globalfoundries-pdk-libs-gf180mcu_fd_pr.git
+[submodule "vendor/pdks/sky130_fd_pr"]
+	path = vendor/pdks/sky130_fd_pr
+	url = https://github.com/google/skywater-pdk-libs-sky130_fd_pr.git

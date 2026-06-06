@@ -6,6 +6,9 @@ on:
       - "portability-v*"
   workflow_dispatch:
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   portability-release:
     runs-on: ubuntu-latest
@@ -13,6 +16,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: false
 
       - uses: actions/setup-python@v5
         with:
