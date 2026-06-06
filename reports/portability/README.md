@@ -18,9 +18,11 @@ Included:
 
 These are representative benchmark artifacts captured from the standardized portability pipeline. They are not a complete experimental archive.
 
+The RTX 4060 Ti full-suite snapshot is paired with `docs/reproduce_cuda_4060ti.md`, which records the local Torch/CUDA verification commands used to defend the `2.12.0+cu126` environment metadata.
+
 Important reading notes:
 
 - historical snapshots may use the legacy `gpu_pytorch` lane name; current code normalizes it to `torch_accelerated`
 - smoke rows are small-case validation checks and may show accelerator overhead
-- throughput rows should be read alongside `metadata.json` fields such as validation scope, claim level, runtime, and case size
+- throughput and speedup rows should be read alongside `metadata.json` fields such as validation scope, claim level, runtime, and case size
 - ROCm/HIP validation is not claimed by these snapshots

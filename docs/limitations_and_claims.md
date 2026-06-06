@@ -45,3 +45,4 @@ Avoid language like this:
 - `fully portable to AMD GPUs`
 - `ROCm-ready and validated`
 - `HIP support complete`
+- `CUDA-optimized SRAM simulator`

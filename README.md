@@ -1,5 +1,7 @@
 # SRAM GPU Portability And Benchmarking
 
+[![CPU Smoke](https://github.com/dailykim149656-source/SRAM_noise_simulation-GPU-experiment/actions/workflows/cpu-smoke.yml/badge.svg)](https://github.com/dailykim149656-source/SRAM_noise_simulation-GPU-experiment/actions/workflows/cpu-smoke.yml)
+
 This repository is an SRAM surrogate and simulation codebase with a portability-focused analytical benchmark path.
 
 It is positioned as a reproducible GPU validation and benchmarking portfolio asset, not as a hand-tuned CUDA kernel library. The core value is the separation of CPU, NumPy, and accelerator lanes with benchmark artifacts, environment metadata, and CPU-vs-accelerator fidelity checks.
@@ -14,20 +16,21 @@ It is positioned as a reproducible GPU validation and benchmarking portfolio ass
 | Fidelity validation | CPU reference vs accelerator checks with max/mean absolute-delta thresholds |
 | Portability boundary | CUDA-measured evidence is kept separate from ROCm/HIP future work |
 
-## CUDA Validation Snapshot
+## Representative Results
 
-Representative checked-in CUDA evidence:
+Representative checked-in evidence:
 
-| Snapshot | Environment | Case | Result |
-|---|---|---|---|
-| `reports/portability/cuda_smoke_report.md` | Windows, Python 3.11.9, Torch `2.6.0+cu124`, RTX 4060 Ti | `1024x64` smoke | CUDA lane executed and CPU-vs-accelerator fidelity passed |
-| `reports/portability/cuda_full_report.md` | Windows, Python 3.11.9, Torch `2.12.0+cu126`, RTX 4060 Ti | `10000x512`, `5000x1024`, `20000x512` full suite | CUDA lane passed and recorded roughly `185k-1.23M` samples/s across the measured cases |
-| `reports/portability/dashboard.md` | RTX 4060 Ti snapshot series | smoke plus measured full rows | case size, validation scope, claim level, and runtime are summarized together |
+| Evidence | Environment | Workload | Fidelity | Performance Signal |
+|---|---|---|---|---|
+| `reports/portability/cuda_smoke_report.md` | Windows, Python 3.11.9, Torch `2.6.0+cu124`, RTX 4060 Ti | `1024x64` smoke | CPU-vs-accelerator passed | correctness-oriented smoke snapshot |
+| `reports/portability/cuda_full_report.md` | Windows, Python 3.11.9, Torch `2.12.0+cu126`, CUDA `12.6`, RTX 4060 Ti | `10000x512`, `5000x1024`, `20000x512` full suite | max abs delta `2.958160e-08` | `185k-1.23M` samples/s, `18.64x-138.25x` vs `cpu_existing` across measured cases |
+| `reports/portability/dashboard.md` | RTX 4060 Ti snapshot series | smoke plus measured full rows | validation scope and claim level shown per artifact | throughput and speedup ranges summarized beside case size |
 
 Read the benchmark numbers with two separate questions in mind:
 
 - smoke rows prove artifact generation and numerical fidelity on a small case
 - measured throughput rows are environment-specific performance snapshots, not a universal speedup claim
+- the `2.12.0+cu126` Torch value in the full snapshot was rechecked from the local CUDA benchmark environment via `torch.__version__`, `torch.version.cuda`, `torch.cuda.get_device_name(0)`, and `pip show torch`; see `docs/reproduce_cuda_4060ti.md`
 
 Today it provides:
 
@@ -245,6 +248,7 @@ python scripts/export_research_bundle.py --tag public_snapshot --skip-zip
 - `docs/hipify_preflight_inventory.md`
 - `docs/rocm_manual_checklist.md`
 - `docs/limitations_and_claims.md`
+- `docs/reproduce_cuda_4060ti.md`
 - `docs/results_interpretation_guide.md`
 - `docs/portability_issue_backlog.md`
 - `docs/portability_release_checklist.md`

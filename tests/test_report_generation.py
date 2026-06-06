@@ -17,6 +17,8 @@ class ReportGenerationTests(unittest.TestCase):
             self.assertFalse(contains_absolute_path(text), msg=f"absolute path found in {filename}")
             if filename == "metadata.json":
                 json.loads(text)
+            if filename == "report.md":
+                self.assertIn("Speedup vs CPU Existing", text)
         for plot_name in ("throughput.png", "latency.png"):
             plot_path = self.result.artifact_dir / "plots" / plot_name
             if plot_path.exists():
@@ -41,6 +43,7 @@ class ReportGenerationTests(unittest.TestCase):
             Path("docs/prd_completion_matrix.md"),
             Path("docs/portability_release_checklist.md"),
             Path("docs/results_interpretation_guide.md"),
+            Path("docs/reproduce_cuda_4060ti.md"),
             Path("docker/README.md"),
             Path("reports/portability/README.md"),
             Path("reports/portability/dashboard.md"),

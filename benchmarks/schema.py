@@ -69,7 +69,7 @@ LANE_ALIASES = {
 FIDELITY_PAIR_ALIASES = {
     "cpu_existing_vs_gpu_pytorch": "cpu_existing_vs_torch_accelerated",
 }
-WINDOWS_ABS_PATH_RE = re.compile(r"[A-Za-z]:[\\/]")
+WINDOWS_ABS_PATH_RE = re.compile(r"(?<![A-Za-z0-9])[A-Za-z]:[\\/]")
 POSIX_ABS_PATH_RE = re.compile(r"(?<![A-Za-z0-9_])/(Users|home|tmp|var|opt|etc)/")
 
 

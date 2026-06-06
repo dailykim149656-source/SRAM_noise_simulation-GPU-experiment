@@ -25,12 +25,36 @@ def write_results_csv(path: Path, rows: list[dict[str, object]]) -> None:
         writer.writerows(rows)
 
 
+def _cpu_existing_throughput_by_case(rows: list[dict[str, object]]) -> dict[str, float]:
+    baselines: dict[str, float] = {}
+    for row in rows:
+        if normalize_lane_name(str(row.get("lane", ""))) != "cpu_existing":
+            continue
+        if str(row.get("status", "")) != "pass":
+            continue
+        throughput = float(row.get("throughput_samples_per_sec", 0.0))
+        if throughput > 0.0:
+            baselines[str(row["case_id"])] = throughput
+    return baselines
+
+
+def _speedup_vs_cpu_existing(row: dict[str, object], baselines: dict[str, float]) -> str:
+    if str(row.get("status", "")) != "pass":
+        return "n/a"
+    baseline = baselines.get(str(row.get("case_id", "")), 0.0)
+    throughput = float(row.get("throughput_samples_per_sec", 0.0))
+    if baseline <= 0.0 or throughput <= 0.0:
+        return "n/a"
+    return f"{throughput / baseline:.2f}x"
+
+
 def build_report_markdown(
     *,
     metadata: dict[str, object],
     rows: list[dict[str, object]],
     fidelity_records: list[dict[str, object]],
 ) -> str:
+    cpu_existing_throughput = _cpu_existing_throughput_by_case(rows)
     lines: list[str] = [
         "# SRAM Analytical Benchmark Report",
         "",
@@ -56,8 +80,8 @@ def build_report_markdown(
         "",
         "## Results",
         "",
-        "| Case | Lane | Status | Engine | Backend | Runtime | Device | Median Wall Clock (s) | Throughput (samples/s) | Mean Prediction |",
-        "|---|---|---|---|---|---|---|---:|---:|---:|",
+        "| Case | Lane | Status | Engine | Backend | Runtime | Device | Median Wall Clock (s) | Throughput (samples/s) | Speedup vs CPU Existing | Mean Prediction |",
+        "|---|---|---|---|---|---|---|---:|---:|---:|---:|",
     ]
     for row in rows:
         lines.append(
@@ -66,6 +90,7 @@ def build_report_markdown(
             f"{row.get('backend_kind', 'unknown')} | {row.get('runtime_kind', 'unknown')} | "
             f"{row.get('device_display_name', row['device_name'])} | "
             f"{float(row['wall_clock_sec']):.6f} | {float(row['throughput_samples_per_sec']):.3f} | "
+            f"{_speedup_vs_cpu_existing(row, cpu_existing_throughput)} | "
             f"{float(row['mean_prediction']):.6f} |"
         )
 

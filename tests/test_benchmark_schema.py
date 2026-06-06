@@ -2,7 +2,7 @@ import csv
 import json
 import unittest
 
-from benchmarks.schema import validate_fidelity_records, validate_metadata, validate_result_rows
+from benchmarks.schema import contains_absolute_path, validate_fidelity_records, validate_metadata, validate_result_rows
 from tests.benchmark_test_support import get_smoke_result
 
 
@@ -35,3 +35,7 @@ class BenchmarkSchemaTests(unittest.TestCase):
             self.assertTrue((self.result.artifact_dir / "plots" / "throughput.png").exists())
             self.assertTrue((self.result.artifact_dir / "plots" / "latency.png").exists())
         self.assertEqual(len(rows), 3)
+
+    def test_absolute_path_detection_allows_urls(self) -> None:
+        self.assertFalse(contains_absolute_path("https://github.com/example/project/actions/workflows/ci.yml"))
+        self.assertTrue(contains_absolute_path(r"C:\Users\example\artifact.md"))

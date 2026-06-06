@@ -65,6 +65,29 @@ def _throughput_summary(rows: list[dict[str, str]], lane_name: str) -> str:
     return f"{min(values):.3f}-{max(values):.3f}"
 
 
+def _torch_speedup_summary(rows: list[dict[str, str]]) -> str:
+    cpu_existing_by_case = {
+        row["case_id"]: float(row["throughput_samples_per_sec"])
+        for row in rows
+        if normalize_lane_name(row["lane"]) == "cpu_existing"
+        and row.get("status") == "pass"
+        and float(row["throughput_samples_per_sec"]) > 0.0
+    }
+    speedups = []
+    for row in rows:
+        if normalize_lane_name(row["lane"]) != "torch_accelerated" or row.get("status") != "pass":
+            continue
+        baseline = cpu_existing_by_case.get(row["case_id"], 0.0)
+        throughput = float(row["throughput_samples_per_sec"])
+        if baseline > 0.0 and throughput > 0.0:
+            speedups.append(throughput / baseline)
+    if not speedups:
+        return "n/a"
+    if len(speedups) == 1:
+        return f"{speedups[0]:.2f}x"
+    return f"{min(speedups):.2f}x-{max(speedups):.2f}x"
+
+
 def build_dashboard(artifact_dirs: list[Path]) -> str:
     lines = [
         "# Portability Benchmark Dashboard",
@@ -73,8 +96,8 @@ def build_dashboard(artifact_dirs: list[Path]) -> str:
         "",
         "Interpret smoke rows as correctness/fidelity checks. Treat measured throughput rows as environment-specific snapshots, not universal speedup claims.",
         "",
-        "| Artifact | Suite | Cases | Device Mode | Validation Scope | Claim | Accelerator Runtime | CPU Existing Throughput | CPU NumPy Throughput | Torch Accelerated Throughput |",
-        "|---|---|---|---|---|---|---|---|---|---|",
+        "| Artifact | Suite | Cases | Device Mode | Validation Scope | Claim | Accelerator Runtime | CPU Existing Throughput | CPU NumPy Throughput | Torch Accelerated Throughput | Torch Speedup vs CPU Existing |",
+        "|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     for artifact_dir in artifact_dirs:
         metadata = json.loads((artifact_dir / "metadata.json").read_text(encoding="utf-8"))
@@ -87,7 +110,8 @@ def build_dashboard(artifact_dirs: list[Path]) -> str:
             f"{_accelerator_runtime(metadata)} | "
             f"{_throughput_summary(rows, 'cpu_existing')} | "
             f"{_throughput_summary(rows, 'cpu_numpy')} | "
-            f"{_throughput_summary(rows, 'torch_accelerated')} |"
+            f"{_throughput_summary(rows, 'torch_accelerated')} | "
+            f"{_torch_speedup_summary(rows)} |"
         )
     text = "\n".join(lines) + "\n"
     validate_report_text(text)

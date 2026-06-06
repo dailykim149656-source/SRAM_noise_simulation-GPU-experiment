@@ -34,6 +34,7 @@ class PortabilityDashboardTests(unittest.TestCase):
             self.assertIn("Portability Benchmark Dashboard", text)
             self.assertIn("Validation Scope", text)
             self.assertIn("Claim", text)
+            self.assertIn("Torch Speedup vs CPU Existing", text)
             self.assertIn("1024x64", text)
             self.assertIn("cpu_validated", text)
             self.assertFalse(contains_absolute_path(text))
