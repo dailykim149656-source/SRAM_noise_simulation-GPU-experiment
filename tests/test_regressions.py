@@ -9,14 +9,33 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 import main
+import execution_policy
 import lifetime_service
 import main_advanced
 import native_backend
-from reliability_model import LifetimePredictor, ReliabilityAwareSRAMCell
+from reliability_model import LifetimePredictor, ReliabilityAwareSRAMCell, ReliabilityModel
 from workload_model import CircuitToSystemTranslator, WorkloadScenarios
 
 
 class ReliabilityRegressionTests(unittest.TestCase):
+    def test_nbti_shift_increases_with_temperature(self) -> None:
+        model = ReliabilityModel()
+
+        low_temp = model.calculate_nbti_vth_shift(
+            temperature=300,
+            vgs=1.0,
+            vth=0.4,
+            stress_time=1e6,
+        )
+        high_temp = model.calculate_nbti_vth_shift(
+            temperature=360,
+            vgs=1.0,
+            vth=0.4,
+            stress_time=1e6,
+        )
+
+        self.assertGreater(high_temp, low_temp)
+
     def test_stress_cell_matches_total_stress_time(self) -> None:
         two_step = ReliabilityAwareSRAMCell(width=1.0)
         two_step.stress_cell(temperature=330, vgs=1.0, vds=1.0, stress_duration=1e6)
@@ -44,6 +63,23 @@ class ReliabilityRegressionTests(unittest.TestCase):
 
 
 class SimulationRegressionTests(unittest.TestCase):
+    def test_large_batch_simulation_routes_to_gpu_when_available(self) -> None:
+        with mock.patch.object(execution_policy, "detect_gpu_available", return_value=True):
+            selected, reason, work_size, gpu_available = execution_policy.select_engine(
+                "simulate",
+                {
+                    "compute_mode": "auto",
+                    "latency_mode": "batch",
+                    "num_cells": 1000,
+                    "monte_carlo_runs": 100,
+                },
+            )
+
+        self.assertTrue(gpu_available)
+        self.assertEqual(work_size, 100_000)
+        self.assertEqual(selected, "gpu")
+        self.assertIn("large_workload", reason)
+
     def test_main_array_bit_error_rate_uses_processed_cells(self) -> None:
         array = main.SRAMArray(num_cells=8)
         for cell in array.cells[:2]:

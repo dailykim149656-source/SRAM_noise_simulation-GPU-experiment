@@ -210,7 +210,7 @@ fn calculate_total_vth_shift(
 
 fn calculate_nbti_vth_shift(temperature: f64, vgs: f64, vth: f64, stress_time: f64) -> f64 {
     let vgo = vgs - vth;
-    let temp_factor = (EA_NBTI / (K_B * temperature / Q_E)).exp();
+    let temp_factor = (-EA_NBTI / (K_B * temperature / Q_E)).exp();
     let time_factor = if stress_time <= 0.0 {
         0.0
     } else {
@@ -258,4 +258,17 @@ fn std_dev_population(values: &[f64], mean_value: f64) -> f64 {
         .sum::<f64>()
         / values.len() as f64;
     variance.sqrt()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn nbti_shift_increases_with_temperature() {
+        let low_temp = calculate_nbti_vth_shift(300.0, 1.0, 0.4, 1.0e6);
+        let high_temp = calculate_nbti_vth_shift(360.0, 1.0, 0.4, 1.0e6);
+
+        assert!(high_temp > low_temp);
+    }
 }

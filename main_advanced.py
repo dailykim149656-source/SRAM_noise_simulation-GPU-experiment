@@ -278,7 +278,7 @@ class AdvancedSRAMCell:
         """SRAM 셀 쓰기"""
         write_margin = voltage / self.Vdd
         write_noise = self.generate_noise(temperature, voltage, bit_value)
-        success_prob = write_margin * (1 - write_noise)
+        success_prob = max(0.0, write_margin * (1 - write_noise))
 
         if np.random.random() < success_prob:
             self.stored_bit = bit_value

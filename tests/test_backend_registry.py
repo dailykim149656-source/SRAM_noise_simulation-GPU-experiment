@@ -23,7 +23,10 @@ class BackendRegistryTests(unittest.TestCase):
 
     def test_gpu_lane_reports_availability_or_known_skip_reason(self) -> None:
         gpu_capability = get_gpu_backend_capability(device_mode="auto")
-        self.assertIn(gpu_capability.reason, {"cuda-ready", "torch-unavailable", "cuda-unavailable"})
+        self.assertIn(
+            gpu_capability.reason,
+            {"cuda-ready", "hip-ready", "torch-unavailable", "accelerator-unavailable"},
+        )
 
     def test_runtime_capabilities_include_python_fallback(self) -> None:
         capabilities = {cap.name: cap for cap in get_runtime_backend_capabilities("simulate", native_module=None)}
